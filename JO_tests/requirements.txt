@@ -2,3 +2,4 @@ pytest
 seaborn
 matplotlib
 pandas
+subprocess
