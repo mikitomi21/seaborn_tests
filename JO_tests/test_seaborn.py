@@ -76,3 +76,43 @@ def test_putting_data_to_facegrid():
 
     assert g._margin_titles
 
+
+def test_set_palette():
+    sns.set_palette("husl")
+    palette = sns.color_palette()
+    assert palette
+
+    for color in palette:
+        assert isinstance(color, tuple)
+        assert len(color) == 3
+        assert all(0 <= c <= 1 for c in color)
+
+
+def test_create_histogram_plot():
+    penguins = sns.load_dataset("penguins")
+
+    xlabel = "flipper_length_mm"
+    color = (1.0, 0.0, 0.0, 0.75)
+    sns.histplot(data=penguins, x=xlabel, color=color)
+
+    ax = sns.histplot(penguins)
+    assert ax is not None
+
+    number_of_bars = 182
+    assert len(ax.patches) == number_of_bars
+
+    ylabel = "Count"
+    assert ax.get_ylabel() == ylabel
+    assert ax.get_xlabel() == xlabel
+
+    assert ax.patches[0].get_facecolor() == color
+
+
+def test_set_markers_on_false():
+    #  This test will return False, because there is no option to set markers on False
+    flights_wide = sns.load_dataset('flights').pivot(index='year', columns='month', values='passengers')
+    sns.scatterplot(data=flights_wide, markers=False)
+
+    ax = sns.plt.gca()
+    markers_setting = ax.get_lines()[0].get_markersize()
+    assert markers_setting == 0
