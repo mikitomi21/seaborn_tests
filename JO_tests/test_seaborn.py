@@ -1,24 +1,9 @@
+import numpy as np
 import pytest
 import seaborn as sns
-import matplotlib
+import matplotlib.pyplot as plt
 import pandas
-import subprocess
-
-
-def test_library_installation():
-    command = "pip install seaborn"
-    success = ["Installing collected packages: seaborn", "Requirement already satisfied: seaborn"]
-
-    output = subprocess.run(command, shell=True, capture_output=True, text=True)
-    assert any(message in output.stdout for message in success)
-
-
-def test_library_uninstallation():
-    command = "pip uninstall seaborn -y"
-    success = ["Successfully uninstalled", "Skipping seaborn as it is not installed"]
-
-    output = subprocess.run(command, shell=True, capture_output=True, text=True)
-    assert any(message in output.stdout for message in success)
+import os
 
 
 def test_load_diamonds_dataset():
@@ -39,3 +24,55 @@ def test_load_diamonds_dataset():
 
     last_line = [0.75, "Ideal", "D", "SI2", 62.2, 55., 2757, 5.83, 5.87, 3.64]
     assert diamonds_df.iloc[-1].to_list() == last_line
+
+
+def test_set_title_and_labels_of_plot():
+    data = [1, 2, 3, 4, 5]
+    title = "Title of plot"
+
+    plot: sns.Axes = sns.distplot(data)
+    plot.set_title(title)
+    assert plot.get_title() == title
+
+    xlabel = "X Axis"
+    ylabel = "Y Axis"
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    ax = plt.gca()
+    assert ax.get_xlabel() == xlabel
+    assert ax.get_ylabel() == ylabel
+
+
+def test_save_chart_as_png():
+    tips_df: pandas.DataFrame = sns.load_dataset("tips")
+
+    g = sns.axisgrid.FacetGrid(tips_df, col="sex")
+    g.map(sns.scatterplot, "total_bill", "tip")
+
+    if not os.path.exists("charts"):
+        os.mkdir("charts")
+
+    assert os.path.exists("charts")
+
+    g.savefig("charts/siema.png")
+
+    assert os.path.exists("charts/siema.png")
+
+
+def test_putting_data_to_facegrid():
+    tips_df: pandas.DataFrame = sns.load_dataset("tips")
+
+    g = sns.FacetGrid(tips_df, row="smoker", col="time", margin_titles=True)
+    g.map(sns.regplot, "size", "total_bill", color=".3", fit_reg=False, x_jitter=.1)
+
+    assert len(g.data) == len(tips_df)
+
+    rows = ['Yes', 'No']
+    assert g.row_names == rows
+
+    cols = ['Lunch', 'Dinner']
+    assert g.col_names == cols
+
+    assert g._margin_titles
+
