@@ -80,7 +80,7 @@ def test_save_chart_as_png():
     assert os.path.exists("charts/siema.png")
 
 
-def test_putting_data_to_facegrid():
+def test_putting_data_to_facetgrid():
     tips_df: pandas.DataFrame = sns.load_dataset("tips")
 
     g = sns.FacetGrid(tips_df, row="smoker", col="time", margin_titles=True)
