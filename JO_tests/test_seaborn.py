@@ -26,6 +26,26 @@ def test_load_diamonds_dataset():
     assert diamonds_df.iloc[-1].to_list() == last_line
 
 
+def test_load_tips_dataset():
+    tips_df: pandas.DataFrame = sns.load_dataset("tips")
+
+    headers = ['total_bill', 'tip', 'sex', 'smoker', 'day', 'time', 'size']
+    assert tips_df.columns.to_list() == headers
+
+    shape = (244, 7)
+    assert tips_df.shape == shape
+
+    number_of_elements = 244
+    for col in tips_df.count():
+        assert col == number_of_elements
+
+    first_line = [16.99, 1.01, 'Female', 'No', 'Sun', 'Dinner', 2]
+    assert tips_df.iloc[0].to_list() == first_line
+
+    last_line = [18.78, 3.0, 'Female', 'No', 'Thur', 'Dinner', 2]
+    assert tips_df.iloc[-1].to_list() == last_line
+
+
 def test_set_title_and_labels_of_plot():
     data = [1, 2, 3, 4, 5]
     title = "Title of plot"
