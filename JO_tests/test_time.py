@@ -16,3 +16,17 @@ def test_time_of_putting_data_into_facetgrid():
 
     exe_time = end_time - start_time
     assert exe_time.total_seconds() <= 1
+
+def test_scatterplot_performance():
+    num_of_rows = 1000000
+    data = pandas.DataFrame({
+        'x': range(num_of_rows),
+        'y': range(num_of_rows),
+        'category': ['A', 'B'] * (num_of_rows // 2)
+    })
+
+    start_time = datetime.datetime.now()
+    sns.scatterplot(x='x', y='y', hue='category', data=data)
+    end_time = datetime.datetime.now()
+    time_taken = end_time - start_time
+    assert time_taken.total_seconds() <= 1.5
