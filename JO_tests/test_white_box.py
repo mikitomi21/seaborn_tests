@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from seaborn._core.data import handle_data_source
-from seaborn.utils import load_dataset
+from seaborn._core.properties import Fill
 
 
 @pytest.mark.parametrize("input_data, expected_output_type", [
@@ -25,17 +25,23 @@ def test_handle_data_source_invalid_input(invalid_data):
         handle_data_source(invalid_data)
 
 
-@pytest.mark.parametrize("invalid_data", [
-    1 / 3,
-    "tips.txt",
-    "flights.jpg",
+@pytest.fixture
+def fill_instance():
+    return Fill()
+
+
+@pytest.mark.parametrize("input_data, expected_output", [
+    (0, []),
+    (1, [True]),
+    (2, [True, False]),
+    (3, [True, False, True])
 ])
-def test_load_dataset_value_error(invalid_data):
-    with pytest.raises(ValueError):
-        load_dataset(invalid_data)
+def test_fill_default_values_valid_input(fill_instance, input_data, expected_output):
+    result = fill_instance._default_values(input_data)
+    assert result == expected_output
 
 
-def test_load_dataset_more_helpful_error():
-    obj = pd.DataFrame()
-    with pytest.raises(TypeError):
-        load_dataset(obj)
+def test_fill_default_values_warning_message(fill_instance):
+    with pytest.warns(UserWarning, match="The variable assigned to .* has more than two levels, so .* values will "
+                                         "cycle and may be uninterpretable"):
+        fill_instance._default_values(3)
